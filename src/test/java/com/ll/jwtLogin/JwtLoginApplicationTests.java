@@ -1,5 +1,6 @@
 package com.ll.jwtLogin;
 
+import com.ll.jwtLogin.util.Ut;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.crypto.SecretKey;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,4 +58,32 @@ class JwtLoginApplicationTests {
 
 		assertThat(secretKey1 == secretKey2).isTrue();
 	}
+
+	@Test
+	@DisplayName("toStr()의 ObjectMapper().writeValueAsString(map)를 통해 json 형태의 문자열로 반환 받음")
+	void t5() {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("id", 1L);
+		claims.put("username", "admin");
+
+		String json = (String) Ut.json.toStr(claims);
+		System.out.println(json);
+	}
+
+	@Test
+	@DisplayName("accessToken 을 얻는다.")
+	void t6() {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("id", 1L);
+		claims.put("username", "admin");
+
+		// 지금으로부터 5시간의 유효기간을 가지는 토큰을 생성
+		String accessToken = jwtProvider.genToken(claims, 60 * 60 * 5);
+
+		System.out.println("accessToken : " + accessToken);
+
+		assertThat(accessToken).isNotNull();
+	}
+
+
 }

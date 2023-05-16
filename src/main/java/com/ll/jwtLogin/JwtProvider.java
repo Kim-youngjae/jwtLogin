@@ -1,13 +1,16 @@
 package com.ll.jwtLogin;
 
 import com.ll.jwtLogin.util.Ut;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
@@ -44,9 +47,13 @@ public class JwtProvider { // 토큰을 생성해주는 클래스
     public boolean verify(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(getSecretKey())
+                    .setSigningKey(getSecretKey()) // 생성된 시크릿 키를 가져옴
                     .build()
-                    .parseClaimsJws(token);
+                    .parseClaimsJws(token); // 현재
+        } catch (ExpiredJwtException e) {
+            System.out.println("유효기간 만료되서 예외 발생"); // 테스트
+            System.out.println(e.getMessage());
+            return false;
         } catch (Exception e) {
             return false;
         }

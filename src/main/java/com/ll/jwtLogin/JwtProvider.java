@@ -40,4 +40,28 @@ public class JwtProvider { // 토큰을 생성해주는 클래스
                 .signWith(getSecretKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
+
+    public boolean verify(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSecretKey())
+                    .build()
+                    .parseClaimsJws(token);
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public Map<String, Object> getClaims(String token) {
+        String body = Jwts.parserBuilder()
+                .setSigningKey(getSecretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("body", String.class);
+
+        return Ut.json.toMap(body);
+    }
 }
